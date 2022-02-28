@@ -1,0 +1,354 @@
+From 262341f6339b231682fb0f527893e66df30939e3 Mon Sep 17 00:00:00 2001
+From: Mateusz Ficek <mateusz.ficek@softnauts.com>
+Date: Mon, 28 Feb 2022 16:15:57 +0100
+Subject: [PATCH] Renamed class to BLEManager
+
+---
+ ios/Runner.xcodeproj/project.pbxproj          |  9 ++---
+ ios/Runner/Info.plist                         | 11 ++---
+ lib/data/blue_manager.dart                    |  2 +-
+ .../available_devices_cubit.dart              |  2 +-
+ .../connected_device_cubit.dart               | 16 ++++----
+ pubspec.lock                                  | 40 +++++++++----------
+ 6 files changed, 40 insertions(+), 40 deletions(-)
+
+diff --git a/ios/Runner.xcodeproj/project.pbxproj b/ios/Runner.xcodeproj/project.pbxproj
+index dc528c9..e91406e 100644
+--- a/ios/Runner.xcodeproj/project.pbxproj
++++ b/ios/Runner.xcodeproj/project.pbxproj
+@@ -3,7 +3,7 @@
+ 	archiveVersion = 1;
+ 	classes = {
+ 	};
+-	objectVersion = 50;
++	objectVersion = 51;
+ 	objects = {
+ 
+ /* Begin PBXBuildFile section */
+@@ -68,7 +68,6 @@
+ 				C8BAF7A744E93AE3BB59798D /* Pods-Runner.release.xcconfig */,
+ 				1D6AE01DE7EF852FA9ACAD27 /* Pods-Runner.profile.xcconfig */,
+ 			);
+-			name = Pods;
+ 			path = Pods;
+ 			sourceTree = "<group>";
+ 		};
+@@ -371,7 +370,7 @@
+ 					"$(inherited)",
+ 					"$(PROJECT_DIR)/Flutter",
+ 				);
+-				PRODUCT_BUNDLE_IDENTIFIER = com.example.bandParametersReader;
++				PRODUCT_BUNDLE_IDENTIFIER = wear.app;
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
+ 				SWIFT_VERSION = 5.0;
+@@ -508,7 +507,7 @@
+ 					"$(inherited)",
+ 					"$(PROJECT_DIR)/Flutter",
+ 				);
+-				PRODUCT_BUNDLE_IDENTIFIER = com.example.bandParametersReader;
++				PRODUCT_BUNDLE_IDENTIFIER = wear.app;
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
+ 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+@@ -539,7 +538,7 @@
+ 					"$(inherited)",
+ 					"$(PROJECT_DIR)/Flutter",
+ 				);
+-				PRODUCT_BUNDLE_IDENTIFIER = com.example.bandParametersReader;
++				PRODUCT_BUNDLE_IDENTIFIER = wear.app;
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
+ 				SWIFT_VERSION = 5.0;
+diff --git a/ios/Runner/Info.plist b/ios/Runner/Info.plist
+index aa85b98..bd31ab8 100644
+--- a/ios/Runner/Info.plist
++++ b/ios/Runner/Info.plist
+@@ -4,6 +4,8 @@
+ <dict>
+ 	<key>CFBundleDevelopmentRegion</key>
+ 	<string>$(DEVELOPMENT_LANGUAGE)</string>
++	<key>CFBundleDisplayName</key>
++	<string>WearApp</string>
+ 	<key>CFBundleExecutable</key>
+ 	<string>$(EXECUTABLE_NAME)</string>
+ 	<key>CFBundleIdentifier</key>
+@@ -22,6 +24,10 @@
+ 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+ 	<key>LSRequiresIPhoneOS</key>
+ 	<true/>
++	<key>NSBluetoothAlwaysUsageDescription</key>
++	<string>This application needs access to bluetooth to communicate with BITalino device</string>
++	<key>NSBluetoothPeripheralUsageDescription</key>
++	<string>This application needs access to BLE to communicate with BITalino device</string>
+ 	<key>UILaunchStoryboardName</key>
+ 	<string>LaunchScreen</string>
+ 	<key>UIMainStoryboardFile</key>
+@@ -41,10 +47,5 @@
+ 	</array>
+ 	<key>UIViewControllerBasedStatusBarAppearance</key>
+ 	<false/>
+-	<key>NSBluetoothAlwaysUsageDescription</key>
+-    <string>This application needs access to bluetooth to communicate with BITalino device</string>
+-
+-    <key>NSBluetoothPeripheralUsageDescription</key>
+-    <string>This application needs access to BLE to communicate with BITalino device</string>
+ </dict>
+ </plist>
+diff --git a/lib/data/blue_manager.dart b/lib/data/blue_manager.dart
+index c78153a..b0fd9ad 100644
+--- a/lib/data/blue_manager.dart
++++ b/lib/data/blue_manager.dart
+@@ -9,7 +9,7 @@ import 'package:flutter_blue/flutter_blue.dart';
+ import 'package:share/share.dart';
+ import 'package:flutter_bloc/flutter_bloc.dart';
+ 
+-class BlueManager {
++class BLEManager {
+   FlutterBlue flutterBlue = FlutterBlue.instance;
+   List<BluetoothDevice> devices = [];
+   List<BluetoothService> services = [];
+diff --git a/lib/repositories/available_devices/available_devices_cubit.dart b/lib/repositories/available_devices/available_devices_cubit.dart
+index e7845e2..b12ae81 100644
+--- a/lib/repositories/available_devices/available_devices_cubit.dart
++++ b/lib/repositories/available_devices/available_devices_cubit.dart
+@@ -15,7 +15,7 @@ class AvailableDevicesCubit extends Cubit<AvailableDevicesState> {
+   }
+ 
+   void getAvailableDevices() async {
+-    final availableDevices = await BlueManager().scanForAvailableDevices();
++    final availableDevices = await BLEManager().scanForAvailableDevices();
+ 
+     emit(state.copyWith(
+         availableDevices: availableDevices.toSet().toList(),
+diff --git a/lib/repositories/connected_device/connected_device_cubit.dart b/lib/repositories/connected_device/connected_device_cubit.dart
+index 93bf259..b079de3 100644
+--- a/lib/repositories/connected_device/connected_device_cubit.dart
++++ b/lib/repositories/connected_device/connected_device_cubit.dart
+@@ -24,7 +24,7 @@ class ConnectedDeviceCubit extends Cubit<ConnectedDeviceState> {
+   }
+ 
+   void setConnectedDevice(BluetoothDevice device, BuildContext buildContext) async {
+-    final isConnected = await BlueManager().connectToDevice(device, buildContext);
++    final isConnected = await BLEManager().connectToDevice(device, buildContext);
+     final devices = state.connectedDevices.toList();
+     devices.add(device);
+     if (isConnected == 2)
+@@ -37,17 +37,17 @@ class ConnectedDeviceCubit extends Cubit<ConnectedDeviceState> {
+ 
+   Future<List<BluetoothService>> getDeviceServices(
+       BluetoothDevice device, BuildContext context) async {
+-    final services = await BlueManager().discoverDeviceServices(device);
++    final services = await BLEManager().discoverDeviceServices(device);
+     return services;
+   }
+ 
+   void setListenerForCharacteristics(BluetoothDevice device, BluetoothCharacteristic characteristic,
+       String filePath, BuildContext context) async {
+-    BlueManager().setListener(device, characteristic, filePath, context);
++    BLEManager().setListener(device, characteristic, filePath, context);
+   }
+ 
+   void disableListenerForCharacteristics(BluetoothCharacteristic characteristic) {
+-    BlueManager().disableListener(characteristic);
++    BLEManager().disableListener(characteristic);
+   }
+ 
+   disconnectFromDevice() {
+@@ -61,7 +61,7 @@ class ConnectedDeviceCubit extends Cubit<ConnectedDeviceState> {
+       for (BluetoothDevice device in state.connectedDevices) {
+         final services = await getDeviceServices(device, context);
+         final batteryLevel = await getBatteryLevel(services);
+-        String dir = (await getExternalStorageDirectory()).absolute.path + "/";
++        String dir = (await getTemporaryDirectory()).absolute.path + "/";
+         final filePath = dir + state.username + "device:${device.name.substring(0, 1)}" + ".csv";
+ 
+         _setHeartRateListener(device, services, filePath, buildContext);
+@@ -78,7 +78,7 @@ class ConnectedDeviceCubit extends Cubit<ConnectedDeviceState> {
+       String filePath, BuildContext buildContext) {
+     try {
+       final heartRateService =
+-          BlueManager().findService(services, BleGATTServices.HEART_RATE_SERVICE);
++          BLEManager().findService(services, BleGATTServices.HEART_RATE_SERVICE);
+ 
+       final heartRateCharacteristic = heartRateService.characteristics.firstWhere(
+           (element) =>
+@@ -104,9 +104,9 @@ class ConnectedDeviceCubit extends Cubit<ConnectedDeviceState> {
+   }
+ 
+   Future<int> getBatteryLevel(List<BluetoothService> services) async {
+-    final batteryService = BlueManager().findService(services, BleGATTServices.BATTERY_SERVICE);
++    final batteryService = BLEManager().findService(services, BleGATTServices.BATTERY_SERVICE);
+     try {
+-      final currentBattery = await BlueManager().getDeviceBatteryLevel(
++      final currentBattery = await BLEManager().getDeviceBatteryLevel(
+           batteryService.characteristics.firstWhere(
+               (element) => element.uuid.toString().contains(BleGATTCharacteristics.BATTERY_LEVEL),
+               orElse: null),
+diff --git a/pubspec.lock b/pubspec.lock
+index 2c1db51..335964e 100644
+--- a/pubspec.lock
++++ b/pubspec.lock
+@@ -21,7 +21,7 @@ packages:
+       name: async
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "2.5.0"
++    version: "2.5.0-nullsafety.1"
+   bitalino:
+     dependency: "direct main"
+     description:
+@@ -42,35 +42,35 @@ packages:
+       name: boolean_selector
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "2.1.0"
++    version: "2.1.0-nullsafety.1"
+   characters:
+     dependency: transitive
+     description:
+       name: characters
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "1.1.0"
++    version: "1.1.0-nullsafety.3"
+   charcode:
+     dependency: transitive
+     description:
+       name: charcode
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "1.2.0"
++    version: "1.2.0-nullsafety.1"
+   clock:
+     dependency: transitive
+     description:
+       name: clock
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "1.1.0"
++    version: "1.1.0-nullsafety.1"
+   collection:
+     dependency: transitive
+     description:
+       name: collection
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "1.15.0"
++    version: "1.15.0-nullsafety.3"
+   convert:
+     dependency: transitive
+     description:
+@@ -112,7 +112,7 @@ packages:
+       name: fake_async
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "1.2.0"
++    version: "1.2.0-nullsafety.1"
+   ffi:
+     dependency: transitive
+     description:
+@@ -213,14 +213,14 @@ packages:
+       name: matcher
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "0.12.10"
++    version: "0.12.10-nullsafety.1"
+   meta:
+     dependency: transitive
+     description:
+       name: meta
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "1.3.0"
++    version: "1.3.0-nullsafety.3"
+   mime:
+     dependency: transitive
+     description:
+@@ -241,7 +241,7 @@ packages:
+       name: path
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "1.8.0"
++    version: "1.8.0-nullsafety.1"
+   path_provider:
+     dependency: "direct main"
+     description:
+@@ -351,28 +351,28 @@ packages:
+       name: source_span
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "1.8.0"
++    version: "1.8.0-nullsafety.2"
+   stack_trace:
+     dependency: transitive
+     description:
+       name: stack_trace
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "1.10.0"
++    version: "1.10.0-nullsafety.1"
+   stream_channel:
+     dependency: transitive
+     description:
+       name: stream_channel
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "2.1.0"
++    version: "2.1.0-nullsafety.1"
+   string_scanner:
+     dependency: transitive
+     description:
+       name: string_scanner
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "1.1.0"
++    version: "1.1.0-nullsafety.1"
+   syncfusion_flutter_charts:
+     dependency: "direct main"
+     description:
+@@ -400,14 +400,14 @@ packages:
+       name: term_glyph
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "1.2.0"
++    version: "1.2.0-nullsafety.1"
+   test_api:
+     dependency: transitive
+     description:
+       name: test_api
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "0.2.19"
++    version: "0.2.19-nullsafety.2"
+   toast:
+     dependency: "direct main"
+     description:
+@@ -421,14 +421,14 @@ packages:
+       name: typed_data
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "1.3.0"
++    version: "1.3.0-nullsafety.3"
+   vector_math:
+     dependency: transitive
+     description:
+       name: vector_math
+       url: "https://pub.dartlang.org"
+     source: hosted
+-    version: "2.1.0"
++    version: "2.1.0-nullsafety.3"
+   win32:
+     dependency: transitive
+     description:
+@@ -444,5 +444,5 @@ packages:
+     source: hosted
+     version: "0.1.2"
+ sdks:
+-  dart: ">=2.12.0-0.0 <3.0.0"
+-  flutter: ">=1.17.0"
++  dart: ">=2.10.0-110 <2.11.0"
++  flutter: ">=1.17.0 <2.0.0"
+-- 
+2.20.1
+
